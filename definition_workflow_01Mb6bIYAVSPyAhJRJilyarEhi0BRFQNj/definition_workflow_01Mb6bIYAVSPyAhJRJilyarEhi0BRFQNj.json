@@ -1,0 +1,218 @@
+{
+  "workflow": {
+    "unique_name": "definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj",
+    "name": "Duo Modify Policy",
+    "title": "Duo Modify Policy",
+    "type": "generic.workflow",
+    "base_type": "workflow",
+    "variables": [
+      {
+        "schema_id": "01MIbeEG3CtyXtNUtMoRtR9NW1aGTdjak",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "Duo Ikey",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01Mb7udQEdlUIH35UPjPO4XVb0JyGI2Zr",
+        "object_type": ""
+      },
+      {
+        "schema_id": "01MIbeDgHtqHyCNd5syDyK3wgK8J39ZTL",
+        "properties": {
+          "scope": "input",
+          "name": "Duo Skey",
+          "type": "datatype.secure_string"
+        },
+        "unique_name": "variable_workflow_01Mb7wPujk1uAdnLN0dshdc9mwOTyFIhv",
+        "object_type": ""
+      },
+      {
+        "schema_id": "01MIbeEG3CtyXtNUtMoRtR9NW1aGTdjak",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "Policy Key",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01Mb86T49JYDoe89LytPFGaZWaZZ8pUzf",
+        "object_type": ""
+      },
+      {
+        "schema_id": "01MIbeEG3CtyXtNUtMoRtR9NW1aGTdjak",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "Policy",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01Mb8h9nhJ5tevJfceOWStChxqPlgBXuc",
+        "object_type": ""
+      },
+      {
+        "schema_id": "01MIbeEG3CtyXtNUtMoRtR9NW1aGTdjak",
+        "properties": {
+          "value": "",
+          "scope": "local",
+          "name": "API Endpoint",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01Mb7NgYmqodNmh7ta2b6H8x9tYC5GB6a",
+        "object_type": ""
+      },
+      {
+        "schema_id": "01MIbeEG3CtyXtNUtMoRtR9NW1aGTdjak",
+        "properties": {
+          "value": "POST",
+          "scope": "local",
+          "name": "API Method",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01Mb7Q0bGG8SC2WmCrHSwYMOzA114YJUV",
+        "object_type": ""
+      },
+      {
+        "schema_id": "01MIbeEG3CtyXtNUtMoRtR9NW1aGTdjak",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "Duo API Host",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01Mb7c7X6GEuVXLtIWYfCJFGxhtJmIV7F",
+        "object_type": ""
+      }
+    ],
+    "properties": {
+      "atomic": {
+        "is_atomic": false
+      },
+      "delete_workflow_instance": false,
+      "description": "Modifies a policy stored in Duo",
+      "display_name": "Duo Modify Policy",
+      "favorite": false,
+      "target": {
+        "target_type": "web-service.endpoint",
+        "target_id": "definition_target_01MXR01DgREoIVnskLNRsJBinYc2jO8D1",
+        "execute_on_workflow_target": true
+      }
+    },
+    "object_type": "definition_workflow",
+    "actions": [
+      {
+        "unique_name": "definition_activity_01Mb87cvWdyIV2BKzdrdv04Vwt8ktLlov",
+        "name": "Set Variables",
+        "title": "Set Variables",
+        "type": "core.set_multiple_variables",
+        "base_type": "activity",
+        "properties": {
+          "display_name": "Set Variables",
+          "variables_to_update": [
+            {
+              "variable_to_update": "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.local.variable_workflow_01Mb7NgYmqodNmh7ta2b6H8x9tYC5GB6a$",
+              "variable_value_new": "/admin/v1/policies/$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.input.variable_workflow_01Mb86T49JYDoe89LytPFGaZWaZZ8pUzf$"
+            }
+          ]
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01Mb8STmbsqAVryCb9O6GRUq5dfPmrktS",
+        "name": "Execute Python Script",
+        "title": "Execute Python Script",
+        "type": "python.script",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 180,
+          "display_name": "Execute Python Script",
+          "script": "import base64, email, hmac, hashlib, urllib, sys\nfrom urlparse import urlparse,parse_qsl\n\n\nargs = [str(x) for x in sys.argv[1:]]\n(method,r_path,s_key,i_key,host, body)=args\n\nu = urlparse('https://{}/{}'.format(host,r_path.lstrip('/')))\n\nparams_t = dict(parse_qsl(u.query))\n\nbody = dict(parse_qsl(body))\ne_body = urllib.urlencode(body)\n\nparams = params_t.copy()\nparams.update(body)\n\nnow = email.Utils.formatdate()\ncanon = [now, method.upper(), host.lower(), r_path]\nargs = []\nfor key in sorted(params.keys()):\n    val = params[key]\n    if isinstance(val, unicode):\n        val = val.encode(\"utf-8\")\n    args.append('%s=%s' % (urllib.quote(key, '~'), urllib.quote(val, '~')))\ncanon.append('\u0026'.join(args))\ncanon = '\\n'.join(canon)\n\n\nprint(canon)\n\nsig = hmac.new(s_key, canon, hashlib.sha1)\nauth = '%s:%s' % (i_key, sig.hexdigest())\n\ns = {'Date': now, 'Authorization': 'Basic %s' % base64.b64encode(auth)}",
+          "script_arguments": [
+            "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.local.variable_workflow_01Mb7Q0bGG8SC2WmCrHSwYMOzA114YJUV$",
+            "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.local.variable_workflow_01Mb7NgYmqodNmh7ta2b6H8x9tYC5GB6a$",
+            "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.input.variable_workflow_01Mb7wPujk1uAdnLN0dshdc9mwOTyFIhv$",
+            "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.input.variable_workflow_01Mb7udQEdlUIH35UPjPO4XVb0JyGI2Zr$",
+            "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.input.variable_workflow_01Mb7c7X6GEuVXLtIWYfCJFGxhtJmIV7F$",
+            "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.input.variable_workflow_01Mb8h9nhJ5tevJfceOWStChxqPlgBXuc$"
+          ],
+          "script_queries": [
+            {
+              "script_query": "s['Date']",
+              "script_query_name": "Date",
+              "script_query_type": "string"
+            },
+            {
+              "script_query": "s['Authorization']",
+              "script_query_name": "Authorization",
+              "script_query_type": "string"
+            },
+            {
+              "script_query": "e_body",
+              "script_query_name": "Encoded Body",
+              "script_query_type": "string"
+            }
+          ]
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_01Mb8sGtGr1m6vR9uTPQHPTrFF9y1v5fJ",
+        "name": "HTTP Request",
+        "title": "HTTP Request",
+        "type": "web-service.http_request",
+        "base_type": "activity",
+        "properties": {
+          "action_timeout": 180,
+          "allow_auto_redirect": true,
+          "body": "$activity.definition_activity_01Mb8STmbsqAVryCb9O6GRUq5dfPmrktS.output.script_queries.Encoded Body$",
+          "continue_on_error_status_code": false,
+          "custom_headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            },
+            {
+              "name": "Authorization",
+              "value": "$activity.definition_activity_01Mb8STmbsqAVryCb9O6GRUq5dfPmrktS.output.script_queries.Authorization$"
+            },
+            {
+              "name": "Date",
+              "value": "$activity.definition_activity_01Mb8STmbsqAVryCb9O6GRUq5dfPmrktS.output.script_queries.Date$"
+            }
+          ],
+          "display_name": "HTTP Request",
+          "method": "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.local.variable_workflow_01Mb7Q0bGG8SC2WmCrHSwYMOzA114YJUV$",
+          "relative_url": "$workflow.definition_workflow_01Mb6bIYAVSPyAhJRJilyarEhi0BRFQNj.local.variable_workflow_01Mb7NgYmqodNmh7ta2b6H8x9tYC5GB6a$",
+          "runtime_user": {
+            "override_target_runtime_user": false,
+            "target_default": true
+          },
+          "target": {
+            "override_workflow_target": false,
+            "use_workflow_target": true
+          }
+        },
+        "object_type": "definition_activity"
+      }
+    ],
+    "categories": [
+      "category_1BMfMXSnJMyt5Ihqi7rWJr5N8cf"
+    ]
+  },
+  "targets": {
+    "definition_target_01MXR01DgREoIVnskLNRsJBinYc2jO8D1": {
+      "unique_name": "definition_target_01MXR01DgREoIVnskLNRsJBinYc2jO8D1",
+      "name": "Duo API Host",
+      "title": "Duo API Host",
+      "type": "web-service.endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "disable_certificate_validation": true,
+        "display_name": "Duo API Host",
+        "host": "tp",
+        "no_runtime_user": true,
+        "protocol": "https"
+      }
+    }
+  }
+}
