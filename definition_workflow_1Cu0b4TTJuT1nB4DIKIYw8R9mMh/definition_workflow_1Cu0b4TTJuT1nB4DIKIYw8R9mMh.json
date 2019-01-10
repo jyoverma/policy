@@ -1,0 +1,577 @@
+{
+  "workflow": {
+    "unique_name": "definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh",
+    "name": "CSR Integration",
+    "title": "CSR Integration",
+    "type": "generic.workflow",
+    "base_type": "workflow",
+    "variables": [
+      {
+        "schema_id": "1CtpjFMqR68ZzciQOz1rQobzLj7",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "SourceIP",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01KtpZzdIHlctdDDyJ4gjQNwPwGWN69e2",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "1CtpjFMqR68ZzciQOz1rQobzLj7",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "DestIP",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01KtpZzdIQmyXQNiSZucuPuK0162GTA05",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "1CtpjFMqR68ZzciQOz1rQobzLj7",
+        "properties": {
+          "value": "",
+          "scope": "output",
+          "name": "output",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01KtpZzdGcnuUXx3LM7YAdwmjnHRPoNXm",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "1CtpjF0wGZxmvKSEBCmsD9qnB8n",
+        "properties": {
+          "scope": "local",
+          "name": "auth-token",
+          "type": "datatype.secure_string"
+        },
+        "unique_name": "variable_workflow_01KtpZzdH1gpbQFKeEJo8KmVi400Wm811",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "1CtpjFMqR68ZzciQOz1rQobzLj7",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "acl_id",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01KtpZzdHBj6L47JyJZhRMPnZGalTAAlz",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "1CtpjFMqR68ZzciQOz1rQobzLj7",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "command",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01KtpZzdHxc7bl3yf1Q7x7X2NGUDQ1CvQ",
+        "object_type": "variable_workflow"
+      },
+      {
+        "schema_id": "1CtpjFMqR68ZzciQOz1rQobzLj7",
+        "properties": {
+          "value": "",
+          "scope": "input",
+          "name": "action",
+          "type": "datatype.string"
+        },
+        "unique_name": "variable_workflow_01KtpZzdI8WWrMVR5xNU1fgUUMJShrpd7",
+        "object_type": "variable_workflow"
+      }
+    ],
+    "properties": {
+      "atomic": {
+        "is_atomic": false
+      },
+      "delete_workflow_instance": false,
+      "description": "CSR ",
+      "display_name": "CSR Integration",
+      "favorite": false,
+      "target": {
+        "target_type": "web-service.endpoint",
+        "target_id": "definition_target_1Cu0KWVwIxJp18kklDDlGHMP6kS",
+        "execute_on_workflow_target": true
+      }
+    },
+    "object_type": "definition_workflow",
+    "actions": [
+      {
+        "unique_name": "definition_activity_1Cu2Sqt6pcoxn9RggZlNSMzLt8w",
+        "name": "HTTP Request",
+        "title": "Fetch Token",
+        "type": "web-service.http_request",
+        "base_type": "activity",
+        "properties": {
+          "accept": "application/json",
+          "action_timeout": 180,
+          "allow_auto_redirect": true,
+          "content_type": "application/json",
+          "continue_on_error_status_code": false,
+          "custom_headers": [
+            {
+              "name": "Authorization",
+              "value": "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.local.variable_workflow_01KtpZzdH1gpbQFKeEJo8KmVi400Wm811$"
+            }
+          ],
+          "display_name": "Fetch Token",
+          "method": "POST",
+          "relative_url": "auth/token-services",
+          "runtime_user": {
+            "override_target_runtime_user": false,
+            "target_default": true
+          },
+          "target": {
+            "override_workflow_target": false,
+            "use_workflow_target": true
+          }
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_1Cu6dC7eaDiAsGJLJsKjFDzo6Pw",
+        "name": "JSONPath Query",
+        "title": "Fetch API-Key",
+        "type": "corejava.jsonpathquery",
+        "base_type": "activity",
+        "properties": {
+          "display_name": "Fetch API-Key",
+          "input_json": "$activity.definition_activity_1Cu2Sqt6pcoxn9RggZlNSMzLt8w.output.response_body$",
+          "jsonpath_queries": [
+            {
+              "jsonpath_query": "$.token-id",
+              "jsonpath_query_name": "api-key",
+              "jsonpath_query_type": "string"
+            }
+          ]
+        },
+        "object_type": "definition_activity"
+      },
+      {
+        "unique_name": "definition_activity_1Cu6B4kZHBnVsW81bnMsZATEGYD",
+        "name": "Condition Block",
+        "title": "Condition Block",
+        "type": "logic.if_else",
+        "base_type": "activity",
+        "properties": {
+          "display_name": "Condition Block"
+        },
+        "object_type": "definition_activity",
+        "blocks": [
+          {
+            "unique_name": "definition_activity_1Cu6BDstnRUZ8Ga7qwBHZetONJi",
+            "name": "Condition Branch",
+            "title": "Condition Branch",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdHxc7bl3yf1Q7x7X2NGUDQ1CvQ$",
+                "operator": "eq",
+                "right_operand": "listACLs"
+              },
+              "display_name": "Condition Branch"
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_1Cu6Ed0TsRzfjIjZhIh8ff7dZ7n",
+                "name": "HTTP Request",
+                "title": "listACL",
+                "type": "web-service.http_request",
+                "base_type": "activity",
+                "properties": {
+                  "accept": "application/json",
+                  "action_timeout": 180,
+                  "allow_auto_redirect": true,
+                  "content_type": "application/json",
+                  "continue_on_error_status_code": false,
+                  "custom_headers": [
+                    {
+                      "name": "X-Auth-Token",
+                      "value": "$activity.definition_activity_1Cu6dC7eaDiAsGJLJsKjFDzo6Pw.output.jsonpath_queries.api-key$"
+                    }
+                  ],
+                  "display_name": "listACL",
+                  "method": "GET",
+                  "relative_url": "/acl",
+                  "runtime_user": {
+                    "override_target_runtime_user": false,
+                    "target_default": true
+                  },
+                  "target": {
+                    "override_workflow_target": false,
+                    "use_workflow_target": true
+                  }
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_1Cu6H8SPt0JrKdHgL3i6xTXFA0i",
+                "name": "Set Variables",
+                "title": "Set-Output",
+                "type": "core.set_multiple_variables",
+                "base_type": "activity",
+                "properties": {
+                  "display_name": "Set-Output",
+                  "variables_to_update": [
+                    {
+                      "variable_to_update": "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.output.variable_workflow_01KtpZzdGcnuUXx3LM7YAdwmjnHRPoNXm$",
+                      "variable_value_new": "$activity.definition_activity_1Cu6Ed0TsRzfjIjZhIh8ff7dZ7n.output.response_body$"
+                    }
+                  ]
+                },
+                "object_type": "definition_activity"
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_1Cu6BFsbjozgsNeO9S4Mchu0TtF",
+            "name": "Condition Branch",
+            "title": "Condition Branch",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdHxc7bl3yf1Q7x7X2NGUDQ1CvQ$",
+                "operator": "eq",
+                "right_operand": "getACL"
+              },
+              "display_name": "Condition Branch"
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_1Cu6z7o9VZLyKitFSgDxaI54pCU",
+                "name": "HTTP Request",
+                "title": "getACL",
+                "type": "web-service.http_request",
+                "base_type": "activity",
+                "properties": {
+                  "accept": "application/json",
+                  "action_timeout": 180,
+                  "allow_auto_redirect": true,
+                  "content_type": "application/json",
+                  "continue_on_error_status_code": false,
+                  "custom_headers": [
+                    {
+                      "name": "X-Auth-Token",
+                      "value": "$activity.definition_activity_1Cu6dC7eaDiAsGJLJsKjFDzo6Pw.output.jsonpath_queries.api-key$"
+                    }
+                  ],
+                  "display_name": "getACL",
+                  "method": "GET",
+                  "relative_url": "/acl/$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdHBj6L47JyJZhRMPnZGalTAAlz$",
+                  "runtime_user": {
+                    "target_default": true
+                  },
+                  "target": {
+                    "use_workflow_target": true
+                  }
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_1Cu7EUbI6No3neiJPFDJCGKaap1",
+                "name": "Set Variables",
+                "title": "Set Output",
+                "type": "core.set_multiple_variables",
+                "base_type": "activity",
+                "properties": {
+                  "display_name": "Set Output",
+                  "variables_to_update": [
+                    {
+                      "variable_to_update": "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.output.variable_workflow_01KtpZzdGcnuUXx3LM7YAdwmjnHRPoNXm$",
+                      "variable_value_new": "$activity.definition_activity_1Cu6z7o9VZLyKitFSgDxaI54pCU.output.response_body$"
+                    }
+                  ]
+                },
+                "object_type": "definition_activity"
+              }
+            ]
+          },
+          {
+            "unique_name": "definition_activity_1Cu6UhTpBtTBtBTsrhzSBDsVy5U",
+            "name": "Condition Branch",
+            "title": "Condition Branch",
+            "type": "logic.condition_block",
+            "base_type": "activity",
+            "properties": {
+              "condition": {
+                "left_operand": "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdHxc7bl3yf1Q7x7X2NGUDQ1CvQ$",
+                "operator": "eq",
+                "right_operand": "createACL"
+              },
+              "display_name": "Condition Branch"
+            },
+            "object_type": "definition_activity",
+            "actions": [
+              {
+                "unique_name": "definition_activity_1Cu7J1irLV8ikgGehGwALy9WdvO",
+                "name": "HTTP Request",
+                "title": "getACL",
+                "type": "web-service.http_request",
+                "base_type": "activity",
+                "properties": {
+                  "accept": "application/json",
+                  "action_timeout": 180,
+                  "allow_auto_redirect": true,
+                  "content_type": "application/json",
+                  "continue_on_error_status_code": false,
+                  "custom_headers": [
+                    {
+                      "name": "X-Auth-Token",
+                      "value": "$activity.definition_activity_1Cu6dC7eaDiAsGJLJsKjFDzo6Pw.output.jsonpath_queries.api-key$"
+                    }
+                  ],
+                  "display_name": "getACL",
+                  "method": "GET",
+                  "relative_url": "/acl/$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdHBj6L47JyJZhRMPnZGalTAAlz$",
+                  "runtime_user": {
+                    "target_default": true
+                  },
+                  "target": {
+                    "use_workflow_target": true
+                  }
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_1Cu7MSeIzAAro8993uCHlErEMZc",
+                "name": "JSONPath Query",
+                "title": "Fetch Items - from response",
+                "type": "corejava.jsonpathquery",
+                "base_type": "activity",
+                "properties": {
+                  "display_name": "Fetch Items - from response",
+                  "input_json": "$activity.definition_activity_1Cu7J1irLV8ikgGehGwALy9WdvO.output.response_body$",
+                  "jsonpath_queries": [
+                    {
+                      "jsonpath_query": "$.rules",
+                      "jsonpath_query_name": "rule",
+                      "jsonpath_query_type": "string"
+                    },
+                    {
+                      "jsonpath_query": "$.kind",
+                      "jsonpath_query_name": "kind",
+                      "jsonpath_query_type": "string"
+                    }
+                  ]
+                },
+                "object_type": "definition_activity"
+              },
+              {
+                "unique_name": "definition_activity_1Cu6Za5fRK4wTAMvQEky62x3Rgk",
+                "name": "Condition Block",
+                "title": "Condition Block",
+                "type": "logic.if_else",
+                "base_type": "activity",
+                "properties": {
+                  "display_name": "Condition Block"
+                },
+                "object_type": "definition_activity",
+                "blocks": [
+                  {
+                    "unique_name": "definition_activity_1Cu6ZeBu885S5L1OZ2s9gxoJWNh",
+                    "name": "Condition Branch",
+                    "title": "Condition Branch",
+                    "type": "logic.condition_block",
+                    "base_type": "activity",
+                    "properties": {
+                      "condition": {
+                        "left_operand": "$activity.definition_activity_1Cu7J1irLV8ikgGehGwALy9WdvO.output.status_code$",
+                        "operator": "eq",
+                        "right_operand": 200
+                      },
+                      "display_name": "Condition Branch"
+                    },
+                    "object_type": "definition_activity",
+                    "actions": [
+                      {
+                        "unique_name": "definition_activity_1Cu7iiEiueX5Ipkqz2fbjspzG3a",
+                        "name": "Execute Python Script",
+                        "title": "Execute Python Script",
+                        "type": "python.script",
+                        "base_type": "activity",
+                        "properties": {
+                          "action_timeout": 180,
+                          "display_name": "Execute Python Script",
+                          "script": "import json\nimport sys\n#print sys.argv[1]\n#var uploadPayload\nparams = {}\nglobal params\nseq = 0\nmax_seq = 0      \njson_resp = json.loads(sys.argv[1])\nrules = json_resp['rules']\nkind = json_resp['kind']\nfor rule in rules:\n    max_seq = max(rule['sequence'], seq)\nseq = max_seq + 1\nkind = json_resp['kind']\nseq += 1\nrule_str = '{  \"sequence\": \"'+str(seq)+'\", \"protocol\": \"ip\", \"source\": \"'+sys.argv[2]+'\", \"destination\": \"'+sys.argv[3]+'\", \"action\": \"'+sys.argv[4]+'\" }'\njson_rule = json.loads(rule_str)\nrules.append(json_rule)\nparams = {\"kind\": kind, \"rules\": rules}\nupdatePayload =  json.dumps(params)\n#return uploadPayload",
+                          "script_arguments": [
+                            "$activity.definition_activity_1Cu7J1irLV8ikgGehGwALy9WdvO.output.response_body$",
+                            "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdIHlctdDDyJ4gjQNwPwGWN69e2$",
+                            "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdIQmyXQNiSZucuPuK0162GTA05$",
+                            "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdI8WWrMVR5xNU1fgUUMJShrpd7$"
+                          ],
+                          "script_queries": [
+                            {
+                              "script_query": "updatePayload",
+                              "script_query_name": "updatePayload",
+                              "script_query_type": "string"
+                            }
+                          ]
+                        },
+                        "object_type": "definition_activity"
+                      },
+                      {
+                        "unique_name": "definition_activity_1Cu8zOKJX4BkO4hAlG9EEJuk2ja",
+                        "name": "HTTP Request",
+                        "title": "updateACL",
+                        "type": "web-service.http_request",
+                        "base_type": "activity",
+                        "properties": {
+                          "accept": "application/json",
+                          "action_timeout": 180,
+                          "allow_auto_redirect": true,
+                          "body": "$activity.definition_activity_1Cu7iiEiueX5Ipkqz2fbjspzG3a.output.script_queries.updatePayload$",
+                          "content_type": "application/json",
+                          "continue_on_error_status_code": false,
+                          "custom_headers": [
+                            {
+                              "name": "X-Auth-Token",
+                              "value": "$activity.definition_activity_1Cu6dC7eaDiAsGJLJsKjFDzo6Pw.output.jsonpath_queries.api-key$"
+                            }
+                          ],
+                          "display_name": "updateACL",
+                          "method": "PUT",
+                          "relative_url": "/acl/$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdHBj6L47JyJZhRMPnZGalTAAlz$",
+                          "runtime_user": {
+                            "target_default": true
+                          },
+                          "target": {
+                            "use_workflow_target": true
+                          }
+                        },
+                        "object_type": "definition_activity"
+                      },
+                      {
+                        "unique_name": "definition_activity_1Cu9kXGJRtvfYNM9AVWjP01Ltn8",
+                        "name": "Set Variables",
+                        "title": "Set Output",
+                        "type": "core.set_multiple_variables",
+                        "base_type": "activity",
+                        "properties": {
+                          "display_name": "Set Output",
+                          "variables_to_update": [
+                            {
+                              "variable_to_update": "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.output.variable_workflow_01KtpZzdGcnuUXx3LM7YAdwmjnHRPoNXm$",
+                              "variable_value_new": "$activity.definition_activity_1Cu8zOKJX4BkO4hAlG9EEJuk2ja.output.response_body$"
+                            }
+                          ]
+                        },
+                        "object_type": "definition_activity"
+                      }
+                    ]
+                  },
+                  {
+                    "unique_name": "definition_activity_1Cu6ZeyWekk9Sl4c5Rdzps2p7RW",
+                    "name": "Condition Branch",
+                    "title": "Condition Branch",
+                    "type": "logic.condition_block",
+                    "base_type": "activity",
+                    "properties": {
+                      "condition": {
+                        "left_operand": "$activity.definition_activity_1Cu7J1irLV8ikgGehGwALy9WdvO.output.status_code$",
+                        "operator": "ne",
+                        "right_operand": 200
+                      },
+                      "display_name": "Condition Branch"
+                    },
+                    "object_type": "definition_activity",
+                    "actions": [
+                      {
+                        "unique_name": "definition_activity_1Cu91J9mwcfUmRta5rBKRyJzr5b",
+                        "name": "HTTP Request",
+                        "title": "createACL",
+                        "type": "web-service.http_request",
+                        "base_type": "activity",
+                        "properties": {
+                          "accept": "application/json",
+                          "action_timeout": 180,
+                          "allow_auto_redirect": true,
+                          "body": "{\n    \"kind\": \"object#acl\",\n    \"rules\": [\n    {\n        \"sequence\" : 3,\n        \"protocol\": \"ip\",\n        \"source\": $workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdIHlctdDDyJ4gjQNwPwGWN69e2$,\n        \"destination\": $workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdIQmyXQNiSZucuPuK0162GTA05$,\n        \"action\": $workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.input.variable_workflow_01KtpZzdI8WWrMVR5xNU1fgUUMJShrpd7$\n    }\n    ]\n}",
+                          "content_type": "application/json",
+                          "continue_on_error_status_code": false,
+                          "custom_headers": [
+                            {
+                              "name": "X-Auth-Token",
+                              "value": "$activity.definition_activity_1Cu6dC7eaDiAsGJLJsKjFDzo6Pw.output.jsonpath_queries.api-key$"
+                            }
+                          ],
+                          "display_name": "createACL",
+                          "method": "POST",
+                          "relative_url": "/acl",
+                          "runtime_user": {
+                            "target_default": true
+                          },
+                          "target": {
+                            "use_workflow_target": true
+                          }
+                        },
+                        "object_type": "definition_activity"
+                      },
+                      {
+                        "unique_name": "definition_activity_1Cu9m5gKjewCUMiewCBVSB94fkR",
+                        "name": "Set Variables",
+                        "title": "Set Output",
+                        "type": "core.set_multiple_variables",
+                        "base_type": "activity",
+                        "properties": {
+                          "display_name": "Set Output",
+                          "variables_to_update": [
+                            {
+                              "variable_to_update": "$workflow.definition_workflow_1Cu0b4TTJuT1nB4DIKIYw8R9mMh.output.variable_workflow_01KtpZzdGcnuUXx3LM7YAdwmjnHRPoNXm$",
+                              "variable_value_new": "$activity.definition_activity_1Cu91J9mwcfUmRta5rBKRyJzr5b.output.response_body$"
+                            }
+                          ]
+                        },
+                        "object_type": "definition_activity"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "categories": [
+      "category_1CuBQLPFiZI4TVjqpWtvB7v8FNa"
+    ]
+  },
+  "categories": {
+    "category_1CuBQLPFiZI4TVjqpWtvB7v8FNa": {
+      "unique_name": "category_1CuBQLPFiZI4TVjqpWtvB7v8FNa",
+      "name": "Visibility",
+      "title": "Visibility",
+      "type": "basic.category",
+      "base_type": "category",
+      "category_type": "custom",
+      "object_type": "category"
+    }
+  },
+  "targets": {
+    "definition_target_1Cu0KWVwIxJp18kklDDlGHMP6kS": {
+      "unique_name": "definition_target_1Cu0KWVwIxJp18kklDDlGHMP6kS",
+      "name": "Cisco-CSR1000v",
+      "title": "Cisco-CSR1000v",
+      "type": "web-service.endpoint",
+      "base_type": "target",
+      "object_type": "definition_target",
+      "properties": {
+        "description": "Target used by Jyothi - From AMP/Visibility",
+        "disable_certificate_validation": true,
+        "display_name": "Cisco-CSR1000v",
+        "host": "35.172.82.236",
+        "no_runtime_user": true,
+        "path": "/api/v1",
+        "port": 55443,
+        "protocol": "https"
+      }
+    }
+  }
+}
