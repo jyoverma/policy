@@ -201,14 +201,14 @@
   "targets": {
     "definition_target_01MXR01DgREoIVnskLNRsJBinYc2jO8D1": {
       "unique_name": "definition_target_01MXR01DgREoIVnskLNRsJBinYc2jO8D1",
-      "name": "Duo API Host",
-      "title": "Duo API Host",
+      "name": "Duo Web API Host",
+      "title": "Duo Web API Host",
       "type": "web-service.endpoint",
       "base_type": "target",
       "object_type": "definition_target",
       "properties": {
         "disable_certificate_validation": true,
-        "display_name": "Duo API Host",
+        "display_name": "Duo Web API Host",
         "host": "tp",
         "no_runtime_user": true,
         "protocol": "https"
